@@ -12,4 +12,16 @@ public class Main {
         System.out.println("3. Enrollments");
         System.out.println("0. Exit");
     }
+
+    private static void mostrarMenuEstudiantes() {
+
+        System.out.println("\n===== MENÚ ESTUDIANTES =====");
+        System.out.println("1. Crear");
+        System.out.println("2. Buscar por ID");
+        System.out.println("3. Listar todos");
+        System.out.println("4. Actualizar");
+        System.out.println("5. Eliminar");
+        System.out.println("0. Volver");
+
+    }
 }
