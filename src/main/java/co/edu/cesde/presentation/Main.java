@@ -4,6 +4,13 @@ public class Main {
 
     public static void main(String[] args) {
 
+        mostrarMenuPrincipal();
+
+
+    }
+
+    private static void mostrarMenuPrincipal() {
+
         System.out.println("=================================");
         System.out.println(" SISTEMA DE GESTIÓN DE CURSOS");
         System.out.println("=================================");
