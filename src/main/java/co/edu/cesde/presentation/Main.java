@@ -36,4 +36,16 @@ public class Main {
         System.out.println("0. Volver");
 
     }
+
+    private static void showEnrollmentMenu() {
+
+        System.out.println("\n===== MENÚ MATRÍCULAS =====");
+        System.out.println("1. Crear matrícula");
+        System.out.println("2. Buscar por ID");
+        System.out.println("3. Listar todas");
+        System.out.println("4. Cancelar matrícula");
+        System.out.println("5. Eliminar matrícula");
+        System.out.println("0. Volver");
+
+    }
 }
