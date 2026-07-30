@@ -1,11 +1,11 @@
 package co.edu.cesde.domain.models;
 
 public class Course {
-    Long id;
-    String code;
-    String name;
-    String description;
-    Integer maxCapacity;
+    private Long id;
+    private String code;
+    private String name;
+    private String description;
+    private Integer maxCapacity;
 
     public Course(Long id, String code, String name, String description, Integer maxCapacity) {
         this.id = id;

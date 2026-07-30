@@ -3,11 +3,11 @@ package co.edu.cesde.domain.models;
 import java.time.LocalDate;
 
 public class Enrollment {
-    Long id;
-    Long studentId;
-    Long courseId;
-    LocalDate enrollmentDate;
-    EnrollmentStatus status;
+    private Long id;
+    private Long studentId;
+    private Long courseId;
+    private LocalDate enrollmentDate;
+    private EnrollmentStatus status;
 
     public Enrollment(Long id, Long studentId, Long courseId, LocalDate enrollmentDate, EnrollmentStatus status) {
         this.id = id;
