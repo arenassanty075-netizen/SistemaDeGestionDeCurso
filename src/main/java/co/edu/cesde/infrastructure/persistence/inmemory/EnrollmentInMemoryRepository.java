@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class EnrollmetInMemoryRepository implements EnrollmentRepository {
+public class EnrollmentInMemoryRepository implements EnrollmentRepository {
 
     private final List<Enrollment> enrollments = new ArrayList<>();
 

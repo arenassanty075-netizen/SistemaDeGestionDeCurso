@@ -1,8 +1,78 @@
 package co.edu.cesde.presentation;
 
+import co.edu.cesde.application.Repository.CourseRepository;
+import co.edu.cesde.application.Repository.EnrollmentRepository;
+import co.edu.cesde.application.Repository.StudentRepository;
+import co.edu.cesde.infrastructure.DataInitializer;
+import co.edu.cesde.infrastructure.persistence.inmemory.StudentInMemoryRepository;
+import co.edu.cesde.infrastructure.persistence.inmemory.CourseInMemoryRepository;
+import co.edu.cesde.infrastructure.persistence.inmemory.EnrollmentInMemoryRepository;
+import co.edu.cesde.application.service.StudentService;
+import co.edu.cesde.application.service.CourseService;
+import co.edu.cesde.application.service.EnrollmentService;
+
 public class Main {
 
     public static void main(String[] args) {
+
+        StudentRepository studentRepository =
+                new StudentInMemoryRepository();
+
+        CourseRepository courseRepository =
+                new CourseInMemoryRepository();
+
+        EnrollmentRepository enrollmentRepository =
+                new EnrollmentInMemoryRepository();
+
+        DataInitializer dataInitializer =
+                new DataInitializer(
+                        studentRepository,
+                        courseRepository,
+                        enrollmentRepository
+                );
+        dataInitializer.initialize();
+
+        StudentService studentService =
+                new StudentService(studentRepository);
+
+        CourseService courseService =
+                new CourseService(courseRepository);
+
+        EnrollmentService enrollmentService =
+                new EnrollmentService(
+                        enrollmentRepository,
+                        studentRepository,
+                        courseRepository
+                );
+
+
+
+
+
+        studentRepository.findAll().forEach(student ->
+                System.out.println(student)
+        );
+
+
+
+        courseRepository.findAll().forEach(course ->
+                System.out.println(
+                        course.getId() + " | " +
+                                course.getCode() + " | " +
+                                course.getName()
+                )
+        );
+
+        System.out.println("\n=== ENROLLMENTS INICIALES ===");
+
+        enrollmentRepository.findAll().forEach(enrollment ->
+                System.out.println(
+                        enrollment.getId() + " | Student " +
+                                enrollment.getStudentId() + " | Course " +
+                                enrollment.getCourseId() + " | " +
+                                enrollment.getStatus()
+                )
+        );
 
         mostrarMenuPrincipal();
 
