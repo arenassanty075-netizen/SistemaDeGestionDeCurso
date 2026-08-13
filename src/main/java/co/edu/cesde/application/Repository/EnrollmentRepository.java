@@ -1,6 +1,4 @@
 package co.edu.cesde.application.Repository;
-
-import co.edu.cesde.domain.models.Course;
 import co.edu.cesde.domain.models.Enrollment;
 
 import java.util.List;
