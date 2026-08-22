@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: SistemaDeGestionDeCurso
+  datasource:
+    url: jdbc:mysql://localhost:3306/sistema_gestion_cursos?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: santiago
+    password: 12345
+    driver-class-name : com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+        hibernate:
+          format_sql: true
