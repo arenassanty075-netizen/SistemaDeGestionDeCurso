@@ -14,6 +14,7 @@ import co.edu.cesde.domain.models.Student;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.time.LocalDateTime;
 
 public class EnrollmentService {
 
@@ -34,24 +35,30 @@ public class EnrollmentService {
     // CREAR INSCRIPCIÓN
     public EnrollmentDTO save(Enrollment enrollment) {
 
+
         Student student = studentRepository
-                .findById(enrollment.getStudentId())
+                .findById(enrollment.getStudent().getStudentId())
                 .orElseThrow(() ->
-                        new StudentNotFoundException(enrollment.getStudentId()));
+                        new StudentNotFoundException(
+                                enrollment.getStudent().getStudentId()));
 
         Course course = courseRepository
-                .findById(enrollment.getCourseId())
+                .findById(enrollment.getCourse().getId())
                 .orElseThrow(() ->
-                        new CourseNotFoundException(enrollment.getCourseId()));
+                        new CourseNotFoundException(
+                                enrollment.getCourse().getId()));
+
+        enrollment.setStudent(student);
+        enrollment.setCourse(course);
 
         Enrollment savedEnrollment =
                 enrollmentRepository.save(enrollment);
 
-        return toDTO(savedEnrollment, student, course);
+        return toDTO(savedEnrollment);
     }
 
     // CONSULTAR
-    public EnrollmentDTO findById(Long id) {
+    public EnrollmentDTO findById(String id) {
 
         Enrollment enrollment = enrollmentRepository
                 .findById(id)
@@ -71,7 +78,7 @@ public class EnrollmentService {
     }
 
     // CANCELAR INSCRIPCIÓN
-    public EnrollmentDTO cancel(Long id) {
+    public EnrollmentDTO cancel(String id) {
 
         Enrollment enrollment = enrollmentRepository
                 .findById(id)
@@ -87,7 +94,7 @@ public class EnrollmentService {
     }
 
     // ELIMINAR
-    public void delete(Long id) {
+    public void delete(String id) {
 
         if (!enrollmentRepository.existsById(id)) {
             throw new EnrollmentNotFoundException(id);
@@ -99,23 +106,14 @@ public class EnrollmentService {
     // CONVERTIR ENROLLMENT → DTO
     private EnrollmentDTO toDTO(Enrollment enrollment) {
 
-        Student student = studentRepository
-                .findById(enrollment.getStudentId())
-                .orElseThrow(() ->
-                        new StudentNotFoundException(
-                                enrollment.getStudentId()));
-
-        Course course = courseRepository
-                .findById(enrollment.getCourseId())
-                .orElseThrow(() ->
-                        new CourseNotFoundException(
-                                enrollment.getCourseId()));
+        Student student = enrollment.getStudent();
+        Course course = enrollment.getCourse();
 
         return new EnrollmentDTO(
                 enrollment.getId(),
                 student.getFirstName() + " " + student.getLastName(),
                 course.getName(),
-                enrollment.getEnrollmentDate(),
+                enrollment.getCreatedAt(),
                 enrollment.getStatus()
         );
     }
@@ -130,7 +128,7 @@ public class EnrollmentService {
                 enrollment.getId(),
                 student.getFirstName() + " " + student.getLastName(),
                 course.getName(),
-                enrollment.getEnrollmentDate(),
+                enrollment.getCreatedAt(),
                 enrollment.getStatus()
         );
     }

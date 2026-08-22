@@ -20,7 +20,6 @@ public class CourseService {
     public CourseDTO save(CourseDTO courseDTO) {
 
         Course course = new Course(
-                courseDTO.getId(),
                 courseDTO.getCode(),
                 courseDTO.getName(),
                 courseDTO.getDescription(),
@@ -54,7 +53,6 @@ public class CourseService {
     public CourseDTO update(CourseDTO courseDTO) {
 
         Course course = new Course(
-                courseDTO.getId(),
                 courseDTO.getCode(),
                 courseDTO.getName(),
                 courseDTO.getDescription(),

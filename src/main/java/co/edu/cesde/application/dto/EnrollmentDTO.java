@@ -2,30 +2,31 @@ package co.edu.cesde.application.dto;
 
 import co.edu.cesde.domain.models.EnrollmentStatus;
 
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 
 public class EnrollmentDTO {
-    private Long id;
+    private String id;
     private String studentId;
     private String courseId;
-    private LocalDate enrollmentDate;
+    private LocalDateTime createdAt;
     private EnrollmentStatus status;
 
     public EnrollmentDTO() {}
 
-    public EnrollmentDTO(Long id, String studentId, String courseId, LocalDate enrollmentDate, EnrollmentStatus status) {
+    public EnrollmentDTO(String id, String studentId, String courseId, LocalDateTime createdAt, EnrollmentStatus status) {
         this.id = id;
         this.studentId = studentId;
         this.courseId = courseId;
-        this.enrollmentDate = enrollmentDate;
+        this.createdAt = createdAt;
         this.status = status;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -45,12 +46,12 @@ public class EnrollmentDTO {
         this.courseId = courseId;
     }
 
-    public LocalDate getEnrollmentDate() {
-        return enrollmentDate;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setEnrollmentDate(LocalDate enrollmentDate) {
-        this.enrollmentDate = enrollmentDate;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public EnrollmentStatus getStatus() {
@@ -61,3 +62,4 @@ public class EnrollmentDTO {
         this.status = status;
     }
 }
+

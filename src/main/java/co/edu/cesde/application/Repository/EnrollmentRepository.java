@@ -6,9 +6,9 @@ import java.util.Optional;
 
 public interface EnrollmentRepository {
     Enrollment save(Enrollment enrollment);
-    boolean existsById(Long id);
-    Optional<Enrollment> findById(Long id);
-    void deleteById(Long id);
+    boolean existsById(String id);
+    Optional<Enrollment> findById(String id);
+    void deleteById(String id);
     Enrollment update(Enrollment enrollment);
     List<Enrollment> findAll();
 

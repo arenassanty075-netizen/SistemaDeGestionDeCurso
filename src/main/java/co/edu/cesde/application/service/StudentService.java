@@ -23,7 +23,6 @@ public class StudentService {
         String lastName = names.length > 1 ? names[1] : "";
 
         Student student = new Student(
-                studentDTO.getId(),
                 firstName,
                 lastName,
                 studentDTO.getEmail(),
@@ -58,7 +57,6 @@ public class StudentService {
         String lastName = names.length > 1 ? names[1] : "";
 
         Student student = new Student(
-                studentDTO.getId(),
                 firstName,
                 lastName,
                 studentDTO.getEmail(),

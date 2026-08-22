@@ -1,63 +1,52 @@
 package co.edu.cesde.domain.models;
 
-import java.time.LocalDate;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "enrollments")
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor
 public class Enrollment {
-    private Long id;
-    private Long studentId;
-    private Long courseId;
-    private LocalDate enrollmentDate;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "enrollment_id_pk")
+    private String id;
+
+    @ManyToOne
+    @JoinColumn (name = "student_id", nullable = false)
+    private Student student;
+
+    @ManyToOne
+    @JoinColumn(name =  "course_id", nullable = false )
+    private Course course;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private EnrollmentStatus status;
 
-    public Enrollment(Long id, Long studentId, Long courseId, LocalDate enrollmentDate, EnrollmentStatus status) {
-        this.id = id;
-        this.studentId = studentId;
-        this.courseId = courseId;
-        this.enrollmentDate = enrollmentDate;
-        this.status = status;
+    @Column(name = "enrollment_created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+
+    @Column(name = "enrollment_updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
+    public Enrollment(Student student, Course course) {
+        this.student = student;
+        this.course = course;
+        this.status = EnrollmentStatus.ACTIVE;
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
-    public Enrollment() {
 
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getStudentId() {
-        return studentId;
-    }
-
-    public void setStudentId(Long studentId) {
-        this.studentId = studentId;
-    }
-
-    public Long getCourseId() {
-        return courseId;
-    }
-
-    public void setCourseId(Long courseId) {
-        this.courseId = courseId;
-    }
-
-    public LocalDate getEnrollmentDate() {
-        return enrollmentDate;
-    }
-
-    public void setEnrollmentDate(LocalDate enrollmentDate) {
-        this.enrollmentDate = enrollmentDate;
-    }
-
-    public EnrollmentStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(EnrollmentStatus status) {
-        this.status = status;
-    }
 }

@@ -37,7 +37,7 @@ public class DataInitializer {
     private void initializeStudents() {
 
         Student student1 = new Student(
-                1L,
+
                 "Juan",
                 "Pérez",
                 "juan@correo.com",
@@ -45,7 +45,7 @@ public class DataInitializer {
         );
 
         Student student2 = new Student(
-                2L,
+
                 "Ana",
                 "Gómez",
                 "ana@correo.com",
@@ -53,7 +53,7 @@ public class DataInitializer {
         );
 
         Student student3 = new Student(
-                3L,
+
                 "Carlos",
                 "Ruiz",
                 "carlos@correo.com",
@@ -68,7 +68,7 @@ public class DataInitializer {
     private void initializeCourses() {
 
         Course course1 = new Course(
-                1L,
+
                 "JAVA-101",
                 "Java Fundamentals",
                 "Fundamentos de programación en Java",
@@ -76,7 +76,7 @@ public class DataInitializer {
         );
 
         Course course2 = new Course(
-                2L,
+
                 "SPR-201",
                 "Spring Boot",
                 "Desarrollo de aplicaciones con Spring Boot",
@@ -84,7 +84,7 @@ public class DataInitializer {
         );
 
         Course course3 = new Course(
-                3L,
+
                 "DB-301",
                 "Databases",
                 "Fundamentos de bases de datos",
@@ -98,29 +98,30 @@ public class DataInitializer {
 
     private void initializeEnrollments() {
 
-        Enrollment enrollment1 = new Enrollment(
-                1L,
-                1L,
-                1L,
-                LocalDate.of(2026, 8, 1),
-                EnrollmentStatus.ACTIVE
-        );
+        Student student1 = studentRepository
+                .findById(1L)
+                .orElseThrow();
+        Student student2 =studentRepository
+                .findById(2L)
+                .orElseThrow();
+        Student student3 = studentRepository
+                .findById(3L)
+                .orElseThrow();
+        Course course1 = courseRepository
+                .findById(1L)
+                .orElseThrow();
+        Course course2 = courseRepository
+                .findById(2L)
+                .orElseThrow();
+        Course course3 = courseRepository
+                .findById(3L)
+                .orElseThrow();
 
-        Enrollment enrollment2 = new Enrollment(
-                2L,
-                2L,
-                2L,
-                LocalDate.of(2026, 8, 1),
-                EnrollmentStatus.ACTIVE
-        );
 
-        Enrollment enrollment3 = new Enrollment(
-                3L,
-                3L,
-                3L,
-                LocalDate.of(2026, 8, 1),
-                EnrollmentStatus.ACTIVE
-        );
+        Enrollment enrollment1 = new Enrollment(student1,course1);
+        Enrollment enrollment2 = new Enrollment(student2,course2);
+        Enrollment enrollment3 = new Enrollment(student3,course3);
+
 
         enrollmentRepository.save(enrollment1);
         enrollmentRepository.save(enrollment2);
