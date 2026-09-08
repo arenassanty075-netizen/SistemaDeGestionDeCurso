@@ -1,92 +1,71 @@
 package co.edu.cesde.application.service;
 
 import co.edu.cesde.application.Repository.CourseRepository;
-import co.edu.cesde.application.dto.CourseDTO;
 import co.edu.cesde.application.exception.CourseNotFoundException;
 import co.edu.cesde.domain.models.Course;
+import co.edu.cesde.infrastructure.repositories.CourseJpaRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-public class CourseService {
+@Service
+public class CourseService implements CourseRepository {
 
-    private final CourseRepository courseRepository;
+    private final CourseJpaRepository courseRepository;
 
-    public CourseService(CourseRepository courseRepository) {
+    public CourseService(CourseJpaRepository courseRepository) {
         this.courseRepository = courseRepository;
     }
 
     // CREAR
-    public CourseDTO save(CourseDTO courseDTO) {
+    @Override
+    public Course save(Course course) {
 
-        Course course = new Course(
-                courseDTO.getCode(),
-                courseDTO.getName(),
-                courseDTO.getDescription(),
-                courseDTO.getMaxCapacity()
-        );
+        return courseRepository.save(course);
+    }
 
-        Course savedCourse = courseRepository.save(course);
-
-        return toDTO(savedCourse);
+    // VERIFICAR SI EXISTE
+    @Override
+    public Boolean existsById(Long id) {
+        return courseRepository.existsById(id);
     }
 
     // CONSULTAR
-    public CourseDTO findById(Long id) {
+    @Override
+    public Optional<Course> findById(Long id) {
 
-        Course course = courseRepository.findById(id)
-                .orElseThrow(() -> new CourseNotFoundException(id));
+        return courseRepository.findById(id);
 
-        return toDTO(course);
     }
 
     // LISTAR
-    public List<CourseDTO> findAll() {
+    @Override
+    public List<Course> findAll() {
 
-        return courseRepository.findAll()
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        return courseRepository.findAll();
     }
 
     // ACTUALIZAR
-    public CourseDTO update(CourseDTO courseDTO) {
+    @Override
+    public Course update(Course course) {
 
-        Course course = new Course(
-                courseDTO.getCode(),
-                courseDTO.getName(),
-                courseDTO.getDescription(),
-                courseDTO.getMaxCapacity()
-        );
-
-        if (!courseRepository.existsById(courseDTO.getId())) {
-            throw new CourseNotFoundException(courseDTO.getId());
+        if (!courseRepository.existsById(course.getId())) {
+            throw new CourseNotFoundException(course.getId());
         }
 
-        Course updatedCourse = courseRepository.update(course);
 
-        return toDTO(updatedCourse);
+        return courseRepository.save(course);
     }
 
     // ELIMINAR
-    public void delete(Long id) {
+    @Override
+    public void deleteById(Long id) {
 
         if (!courseRepository.existsById(id)) {
             throw new CourseNotFoundException(id);
         }
 
         courseRepository.deleteById(id);
-    }
-
-    // CONVERTIR COURSE → COURSE DTO
-    private CourseDTO toDTO(Course course) {
-
-        return new CourseDTO(
-                course.getId(),
-                course.getCode(),
-                course.getName(),
-                course.getDescription(),
-                course.getMaxCapacity()
-        );
     }
 }

@@ -18,13 +18,13 @@ public class EnrollmentInMemoryRepository implements EnrollmentRepository {
     }
 
     @Override
-    public boolean existsById(String id) {
+    public boolean existsById(Long id) {
         return enrollments.stream().anyMatch(e -> e.getId().equals(id));
 
     }
 
     @Override
-    public Optional<Enrollment> findById(String id) {
+    public Optional<Enrollment> findById(Long id) {
         return enrollments.stream().filter(e -> e.getId().equals(id)).findFirst();
 
     }
@@ -35,7 +35,7 @@ public class EnrollmentInMemoryRepository implements EnrollmentRepository {
     }
 
     @Override
-    public void deleteById(String id) {
+    public void deleteById(Long id) {
         enrollments.removeIf(e -> e.getId().equals(id));
 
     }

@@ -1,95 +1,67 @@
 package co.edu.cesde.application.service;
 
 import co.edu.cesde.application.Repository.StudentRepository;
-import co.edu.cesde.application.dto.StudentDTO;
 import co.edu.cesde.application.exception.StudentNotFoundException;
 import co.edu.cesde.domain.models.Student;
+import co.edu.cesde.infrastructure.repositories.StudentJpaRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
-public class StudentService {
+@Service
+public class StudentService implements StudentRepository {
 
-    private final StudentRepository studentRepository;
+    private final StudentJpaRepository studentRepository;
 
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(StudentJpaRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
 
-    public StudentDTO save(StudentDTO studentDTO) {
-
-        String[] names = studentDTO.getFullName().trim().split(" ", 2);
-        String firstName = names[0];
-        String lastName = names.length > 1 ? names[1] : "";
-
-        Student student = new Student(
-                firstName,
-                lastName,
-                studentDTO.getEmail(),
-                studentDTO.getBirthDate()
-        );
-
-        Student savedStudent = studentRepository.save(student);
-
-        return toDTO(savedStudent);
+    // CREAR
+    @Override
+    public Student save(Student student) {
+        return studentRepository.save(student);
     }
 
-    public StudentDTO findById(Long id) {
+    // CONSULTAR POR ID
+    @Override
+    public Optional<Student> findById(Long studentId) {
+        return studentRepository.findById(studentId);
 
-        Student student = studentRepository.findById(id)
-                .orElseThrow(() -> new StudentNotFoundException(id));
-
-        return toDTO(student);
     }
 
-    public List<StudentDTO> findAll() {
-
-        return studentRepository.findAll()
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    // LISTAR
+    @Override
+    public List<Student> findAll() {
+        return studentRepository.findAll();
     }
 
-    public StudentDTO update(StudentDTO studentDTO) {
+    // ACTUALIZAR
+    @Override
+    public Student update(Student student) {
 
-        String[] names = studentDTO.getFullName().trim().split(" ", 2);
-        String firstName = names[0];
-        String lastName = names.length > 1 ? names[1] : "";
-
-        Student student = new Student(
-                firstName,
-                lastName,
-                studentDTO.getEmail(),
-                studentDTO.getBirthDate()
-        );
-
-        Student updatedStudent = studentRepository.update(student);
-
-        if (updatedStudent == null) {
-            throw new StudentNotFoundException(studentDTO.getId());
+        if (!studentRepository.existsById(student.getStudentId())) {
+            throw new StudentNotFoundException(student.getStudentId());
         }
 
-        return toDTO(updatedStudent);
+        return studentRepository.save(student);
     }
 
-    public void delete(Long id) {
+    // EXISTE
+    @Override
+    public boolean existsById(Long studentId) {
+        return studentRepository.existsById(studentId);
+    }
 
-        if (!studentRepository.existsById(id)) {
-            throw new StudentNotFoundException(id);
+    // ELIMINAR
+    @Override
+    public void deleteById(Long studentId) {
+
+        if (!studentRepository.existsById(studentId)) {
+            throw new StudentNotFoundException(studentId);
         }
 
-        studentRepository.deleteById(id);
-    }
-
-    private StudentDTO toDTO(Student student) {
-
-        String fullName = student.getFirstName() + " " + student.getLastName();
-
-        return new StudentDTO(
-                student.getStudentId(),
-                fullName,
-                student.getEmail(),
-                student.getBirthDate()
-        );
+        studentRepository.deleteById(studentId);
     }
 }

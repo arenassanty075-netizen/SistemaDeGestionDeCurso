@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface StudentRepository {
     Student save(Student student);
-    Optional<Student> findById(Long StudentId);
+    Optional<Student> findById(Long studentId);
     List<Student> findAll();
     Student update(Student student);
     void deleteById(Long StudentId);

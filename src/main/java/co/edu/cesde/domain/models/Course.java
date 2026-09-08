@@ -3,6 +3,7 @@ package co.edu.cesde.domain.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.hibernate.validator.constraints.UUID;
 
 import java.time.LocalDateTime;
 
@@ -33,7 +34,7 @@ public class Course {
     @Column(name = "course_description")
     private String description;
 
-    @NotBlank
+
     @NotNull
     @Min(value = 15,message = "Minima capacidad del curso debe ser al menos 15")
     @Max(value = 30,message = "Maxima capacidad del curso debe ser como maximo 30")

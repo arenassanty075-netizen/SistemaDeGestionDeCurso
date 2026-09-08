@@ -17,9 +17,9 @@ import java.time.LocalDateTime;
 public class Enrollment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "enrollment_id_pk")
-    private String id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn (name = "student_id", nullable = false)
