@@ -48,4 +48,10 @@ public class StudentInMemoryRepository implements StudentRepository {
     public boolean existsById(Long StudentId) {
         return students.stream().anyMatch(student -> student.getStudentId().equals(StudentId));
     }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return students.stream()
+                .anyMatch(student -> student.getEmail().equals(email));
+    }
 }

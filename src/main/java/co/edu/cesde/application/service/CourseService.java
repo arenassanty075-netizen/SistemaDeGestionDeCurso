@@ -1,6 +1,7 @@
 package co.edu.cesde.application.service;
 
 import co.edu.cesde.application.Repository.CourseRepository;
+import co.edu.cesde.application.exception.CourseCodeAlreadyExistsException;
 import co.edu.cesde.application.exception.CourseNotFoundException;
 import co.edu.cesde.domain.models.Course;
 import co.edu.cesde.infrastructure.repositories.CourseJpaRepository;
@@ -22,6 +23,10 @@ public class CourseService implements CourseRepository {
     @Override
     public Course save(Course course) {
 
+        if (courseRepository.existsByCode(course.getCode())) {
+            throw new CourseCodeAlreadyExistsException(course.getCode());
+        }
+
         return courseRepository.save(course);
     }
 
@@ -35,8 +40,13 @@ public class CourseService implements CourseRepository {
     @Override
     public Optional<Course> findById(Long id) {
 
-        return courseRepository.findById(id);
+        Optional<Course> course = courseRepository.findById(id);
 
+        if (course.isEmpty()) {
+            throw new CourseNotFoundException(id);
+        }
+
+        return course;
     }
 
     // LISTAR
@@ -54,6 +64,12 @@ public class CourseService implements CourseRepository {
             throw new CourseNotFoundException(course.getId());
         }
 
+        if (courseRepository.existsByCodeAndIdNot(
+                course.getCode(),
+                course.getId())) {
+
+            throw new CourseCodeAlreadyExistsException(course.getCode());
+        }
 
         return courseRepository.save(course);
     }

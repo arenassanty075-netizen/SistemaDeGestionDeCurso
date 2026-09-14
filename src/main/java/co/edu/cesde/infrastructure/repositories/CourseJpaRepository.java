@@ -8,4 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CourseJpaRepository  extends JpaRepository<Course,Long> {
 
+    boolean existsByCode(String code);
+    boolean existsByCodeAndIdNot(String code, Long id);
+
 }

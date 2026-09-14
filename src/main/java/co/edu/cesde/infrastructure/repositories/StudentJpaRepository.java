@@ -1,6 +1,8 @@
 package co.edu.cesde.infrastructure.repositories;
 
 import co.edu.cesde.domain.models.Student;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +11,5 @@ public interface StudentJpaRepository extends JpaRepository<Student,Long> {
 
     void deleteById(Long StudentId);
 
+    boolean existsByEmail(String email);
 }

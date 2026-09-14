@@ -4,6 +4,7 @@ import co.edu.cesde.application.Repository.CourseRepository;
 import co.edu.cesde.application.Repository.EnrollmentRepository;
 import co.edu.cesde.application.Repository.StudentRepository;
 import co.edu.cesde.application.exception.CourseNotFoundException;
+import co.edu.cesde.application.exception.EnrollmentAlreadyExistsException;
 import co.edu.cesde.application.exception.EnrollmentNotFoundException;
 import co.edu.cesde.application.exception.StudentNotFoundException;
 import co.edu.cesde.domain.models.Course;
@@ -15,6 +16,7 @@ import co.edu.cesde.infrastructure.repositories.EnrollmentJpaRepository;
 import co.edu.cesde.infrastructure.repositories.StudentJpaRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,28 +38,32 @@ public class EnrollmentService implements EnrollmentRepository {
     }
 
     // CREAR INSCRIPCIÓN
-    @Override
-    public Enrollment save(Enrollment enrollment) {
+    public Enrollment createEnrollment(Long studentId, Long courseId) {
 
         Student student = studentRepository
-                .findById(enrollment.getStudent().getStudentId())
+                .findById(studentId)
                 .orElseThrow(() ->
-                        new StudentNotFoundException(
-                                enrollment.getStudent().getStudentId()));
+                        new StudentNotFoundException(studentId));
 
         Course course = courseRepository
-                .findById(enrollment.getCourse().getId())
+                .findById(courseId)
                 .orElseThrow(() ->
-                        new CourseNotFoundException(
-                                enrollment.getCourse().getId()));
+                        new CourseNotFoundException(courseId));
 
-        enrollment.setStudent(student);
-        enrollment.setCourse(course);
+        for (Enrollment e : enrollmentRepository.findAll()) {
+
+            if (e.getStudent().getStudentId().equals(studentId)
+                    && e.getCourse().getId().equals(courseId)) {
+
+                throw new EnrollmentAlreadyExistsException(studentId, courseId);
+            }
+        }
+
+        Enrollment enrollment = new Enrollment(student, course);
 
         enrollment.setStatus(EnrollmentStatus.ACTIVE);
-
-        enrollment.setCreatedAt(java.time.LocalDateTime.now());
-        enrollment.setUpdatedAt(java.time.LocalDateTime.now());
+        enrollment.setCreatedAt(LocalDateTime.now());
+        enrollment.setUpdatedAt(LocalDateTime.now());
 
         return enrollmentRepository.save(enrollment);
     }
@@ -66,7 +72,14 @@ public class EnrollmentService implements EnrollmentRepository {
     @Override
     public Optional<Enrollment> findById(Long id) {
 
-        return enrollmentRepository.findById(id);
+        Optional<Enrollment> enrollment =
+                enrollmentRepository.findById(id);
+
+        if (enrollment.isEmpty()) {
+            throw new EnrollmentNotFoundException(id);
+        }
+
+        return enrollment;
     }
 
     // LISTAR
@@ -91,6 +104,8 @@ public class EnrollmentService implements EnrollmentRepository {
             throw new EnrollmentNotFoundException(enrollment.getId());
         }
 
+        enrollment.setUpdatedAt(LocalDateTime.now());
+
         return enrollmentRepository.save(enrollment);
     }
 
@@ -104,8 +119,8 @@ public class EnrollmentService implements EnrollmentRepository {
 
         enrollmentRepository.deleteById(id);
     }
-
     // CANCELAR INSCRIPCIÓN
+    // CANCELAR MATRÍCULA
     public Enrollment cancel(Long id) {
 
         Enrollment enrollment = enrollmentRepository
@@ -114,7 +129,15 @@ public class EnrollmentService implements EnrollmentRepository {
                         new EnrollmentNotFoundException(id));
 
         enrollment.setStatus(EnrollmentStatus.CANCELLED);
+        enrollment.setUpdatedAt(LocalDateTime.now());
 
         return enrollmentRepository.save(enrollment);
     }
+
+    // MÉTODO SAVE DE LA INTERFAZ
+    @Override
+    public Enrollment save(Enrollment enrollment) {
+        return enrollmentRepository.save(enrollment);
+    }
+
 }
