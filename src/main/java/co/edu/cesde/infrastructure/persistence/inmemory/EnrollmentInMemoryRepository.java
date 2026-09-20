@@ -51,6 +51,16 @@ public class EnrollmentInMemoryRepository implements EnrollmentRepository {
         return null;
     }
 
+    @Override
+    public boolean existsByStudentStudentIdAndCourseId(Long studentId, Long courseId) {
+        for (Enrollment enrollment : enrollments) {
+            if (enrollment.getStudent().getStudentId().equals(studentId)
+                    && enrollment.getCourse().getId().equals(courseId)) {
+                return true;
+            }
+        } return false;
+    }
+
 
 
 }

@@ -11,6 +11,7 @@ public interface EnrollmentRepository {
     void deleteById(Long id);
     Enrollment update(Enrollment enrollment);
     List<Enrollment> findAll();
+    boolean existsByStudentStudentIdAndCourseId(Long studentId, Long courseId);
 
 
 }

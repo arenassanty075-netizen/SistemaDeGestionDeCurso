@@ -12,4 +12,5 @@ public interface StudentJpaRepository extends JpaRepository<Student,Long> {
     void deleteById(Long StudentId);
 
     boolean existsByEmail(String email);
+    boolean existsByEmailAndStudentIdNot(String email, Long studentId);
 }

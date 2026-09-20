@@ -1,15 +1,18 @@
 package co.edu.cesde.presentation.controller;
 
-import co.edu.cesde.application.exception.StudentAlreadyExistsExeption;
+import co.edu.cesde.application.dto.request.CreateStudentDto;
+import co.edu.cesde.application.dto.response.CreateStudentResponseDto;
 import co.edu.cesde.application.exception.StudentNotFoundException;
+import co.edu.cesde.application.exception.SudentEmailAlreadyExistsExeption;
 import co.edu.cesde.application.service.StudentService;
 import co.edu.cesde.domain.models.Student;
-import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/student")
@@ -21,70 +24,165 @@ public class StudentController {
         this.studentService = studentService;
     }
 
+    // GET - LISTAR ESTUDIANTES
     @GetMapping
-    public List<Student> getStudents() {
-        try {
-            return studentService.findAll();
+    public ResponseEntity<List<CreateStudentResponseDto>> getStudents() {
 
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
+        var students = studentService.findAll();
+
+        List<CreateStudentResponseDto> response = new ArrayList<>();
+
+        for (Student student : students) {
+            response.add(new CreateStudentResponseDto(
+                    student.getStudentId(),
+                    student.getFirstName(),
+                    student.getLastName(),
+                    student.getEmail(),
+                    student.getEnrollmentStatus()
+            ));
         }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
     }
+
+    // GET - BUSCAR ESTUDIANTE POR ID
     @GetMapping("/{id}")
-    public Optional<Student> findById(@PathVariable Long id) {
+    public ResponseEntity<?> getStudent(
+            @PathVariable Long id) {
+
         try {
-            return studentService.findById(id);
+
+            var studentOptional = studentService.findById(id);
+
+            Student student = studentOptional.get();
+
+            CreateStudentResponseDto response = new CreateStudentResponseDto(
+                    student.getStudentId(),
+                    student.getFirstName(),
+                    student.getLastName(),
+                    student.getEmail(),
+                    student.getEnrollmentStatus()
+            );
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
 
         } catch (StudentNotFoundException e) {
-            throw new StudentNotFoundException(id);
+
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
         }
     }
 
+    // POST - CREAR ESTUDIANTE
     @PostMapping
-    public Student save(@RequestBody Student student) {
+    public ResponseEntity<?> save(
+            @Valid @RequestBody CreateStudentDto student) {
 
         try {
-            return studentService.save(student);
 
-        }catch (ConstraintViolationException e) {
+            Student newStudent = new Student(
+                    student.firstName(),
+                    student.lastName(),
+                    student.email(),
+                    student.birthDate()
+            );
 
-            if (student.getFirstName() == null || student.getFirstName().isBlank()) {
-                throw new IllegalArgumentException("El nombre no puede estar vacío");
-            }
+            var createdStudent = studentService.save(newStudent);
 
-            if (student.getLastName() == null || student.getLastName().isBlank()) {
-                throw new IllegalArgumentException("El apellido no puede estar vacío");
-            }
+            CreateStudentResponseDto response = new CreateStudentResponseDto(
+                    createdStudent.getStudentId(),
+                    createdStudent.getFirstName(),
+                    createdStudent.getLastName(),
+                    createdStudent.getEmail(),
+                    createdStudent.getEnrollmentStatus()
+            );
 
-            if (student.getEmail() == null || !student.getEmail().contains("@")) {
-                throw new IllegalArgumentException("El correo debe tener un formato válido");
-            }
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(response);
 
-            throw new IllegalArgumentException("Los datos del estudiante no son válidos");
-        }
-    }
+        } catch (SudentEmailAlreadyExistsExeption e) {
 
-
-    @PutMapping("/{id}")
-    public Student update(@PathVariable Long id, @RequestBody Student student) {
-        try {
-            student.setStudentId(id);
-            return studentService.update(student);
-
-        } catch (StudentNotFoundException e) {
-            throw new StudentNotFoundException(id);
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(e.getMessage());
 
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
         }
     }
-    @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Long id) {
+
+    // PUT - ACTUALIZAR ESTUDIANTE
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(
+            @PathVariable Long id,
+            @Valid @RequestBody Student student) {
+
         try {
+
+            student.setStudentId(id);
+
+            var updatedStudent = studentService.update(student);
+
+            CreateStudentResponseDto response = new CreateStudentResponseDto(
+                    updatedStudent.getStudentId(),
+                    updatedStudent.getFirstName(),
+                    updatedStudent.getLastName(),
+                    updatedStudent.getEmail(),
+                    updatedStudent.getEnrollmentStatus()
+            );
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
+
+        } catch (StudentNotFoundException e) {
+
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
+
+        } catch (IllegalArgumentException e) {
+
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+        } catch (SudentEmailAlreadyExistsExeption e) {
+
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(e.getMessage());
+        }
+    }
+
+    // DELETE - ELIMINAR ESTUDIANTE
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteStudent(
+            @PathVariable Long id) {
+
+        try {
+
             studentService.deleteById(id);
 
+            return ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .build();
+
         } catch (StudentNotFoundException e) {
-            throw new StudentNotFoundException(id);
+
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
         }
     }
 }
+
+

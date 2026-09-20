@@ -1,15 +1,20 @@
 package co.edu.cesde.presentation.controller;
 
+import co.edu.cesde.application.dto.request.CreateCourseDto;
+import co.edu.cesde.application.dto.response.CreateCourseResponseDto;
 import co.edu.cesde.application.exception.CourseCodeAlreadyExistsException;
 import co.edu.cesde.application.exception.CourseNotFoundException;
 import co.edu.cesde.application.service.CourseService;
 import co.edu.cesde.domain.models.Course;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/course")
@@ -22,84 +27,97 @@ public class CourseController {
     }
 
     @GetMapping
-    public List<Course> getCourses() {
+    public ResponseEntity<List<CreateCourseResponseDto>> getCourse() {
 
-        try {
-            return courseService.findAll();
+        var courses = courseService.findAll();
+        List<CreateCourseResponseDto> response = new ArrayList<>();
 
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(e.getMessage());
+        for (Course course : courses) {
+            response.add(new CreateCourseResponseDto(
+                    course.getId(),
+                    course.getCode(),
+                    course.getName(),
+                    course.getDescription(),
+                    course.getMaxCapacity()
+
+            ));
         }
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
+
     }
+
 
     @GetMapping("/{id}")
-    public Optional<Course> getCourseById(@PathVariable Long id) {
+    public ResponseEntity<?> getCourseById(@PathVariable Long id) {
 
         try {
-            return courseService.findById(id);
+
+            var courseOptional = courseService.findById(id);
+            Course course = courseOptional.get();
+
+            CreateCourseResponseDto response = new CreateCourseResponseDto(
+                    course.getId(),
+                    course.getCode(),
+                    course.getName(),
+                    course.getDescription(),
+                    course.getMaxCapacity()
+            );
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
 
         } catch (CourseNotFoundException e) {
-            throw new CourseNotFoundException(id);
+
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
         }
     }
+
     @PostMapping
-    public Course save( @RequestBody Course course) {
+    public ResponseEntity<?> save( @Valid @RequestBody CreateCourseDto course) {
 
         try {
-            return courseService.save(course);
+            Course newCourse = new Course(
+                    course.code(),
+                    course.name(),
+                    course.description(),
+                    course.maxCapacity()
+            );
+            var createdCourse = courseService.save(newCourse);
+            CreateCourseResponseDto response = new CreateCourseResponseDto(
+                    createdCourse.getId(),
+                    createdCourse.getCode(),
+                    createdCourse.getName(),
+                    createdCourse.getDescription(),
+                    createdCourse.getMaxCapacity()
+            );
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(response);
+
 
         } catch (CourseCodeAlreadyExistsException e) {
 
-            throw new CourseCodeAlreadyExistsException(course.getCode());
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(e.getMessage());
 
-        } catch (ConstraintViolationException e) {
+        }catch (IllegalArgumentException e){
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
 
-            if (course.getCode() == null || course.getCode().isBlank()) {
-                throw new IllegalArgumentException(
-                        "El código del curso no puede estar vacío"
-                );
-            }
-
-            if (course.getName() == null || course.getName().isBlank()) {
-                throw new IllegalArgumentException(
-                        "El nombre del curso no puede estar vacío"
-                );
-            }
-
-            if (course.getDescription() == null || course.getDescription().isBlank()) {
-                throw new IllegalArgumentException(
-                        "La descripción del curso no puede estar vacía"
-                );
-            }
-
-            if (course.getMaxCapacity() == null) {
-                throw new IllegalArgumentException(
-                        "La capacidad máxima del curso es obligatoria"
-                );
-            }
-
-            if (course.getMaxCapacity() < 15) {
-                throw new IllegalArgumentException(
-                        "La capacidad mínima del curso debe ser de 15 estudiantes"
-                );
-            }
-
-            if (course.getMaxCapacity() > 30) {
-                throw new IllegalArgumentException(
-                        "La capacidad máxima del curso debe ser de 30 estudiantes"
-                );
-            }
-
-            throw new IllegalArgumentException(
-                    "Los datos del curso no son válidos"
-            );
         }
     }
 
 
 
     @PutMapping("/{id}")
-    public Course update(
+    public ResponseEntity<?> update(
             @PathVariable Long id,
             @RequestBody Course course) {
 
@@ -107,30 +125,55 @@ public class CourseController {
 
             course.setId(id);
 
-            return courseService.update(course);
+            var updatedCourse = courseService.update(course);
+
+            CreateCourseResponseDto response = new CreateCourseResponseDto(
+                    updatedCourse.getId(),
+                    updatedCourse.getCode(),
+                    updatedCourse.getName(),
+                    updatedCourse.getDescription(),
+                    updatedCourse.getMaxCapacity()
+            );
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
 
         } catch (CourseNotFoundException e) {
 
-            throw new CourseNotFoundException(id);
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
 
         } catch (CourseCodeAlreadyExistsException e) {
 
-            throw new CourseCodeAlreadyExistsException(course.getCode());
+            return ResponseEntity
+                    .status(HttpStatus.CONFLICT)
+                    .body(e.getMessage());
         }
     }
 
+
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public ResponseEntity<?> delete(@PathVariable Long id) {
 
         try {
 
             courseService.deleteById(id);
 
+            return ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .build();
+
         } catch (CourseNotFoundException e) {
 
-            throw new CourseNotFoundException(id);
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .body(e.getMessage());
         }
     }
+
+
 
 
 

@@ -1,8 +1,6 @@
 package co.edu.cesde.application.service;
 
-import co.edu.cesde.application.Repository.CourseRepository;
 import co.edu.cesde.application.Repository.EnrollmentRepository;
-import co.edu.cesde.application.Repository.StudentRepository;
 import co.edu.cesde.application.exception.CourseNotFoundException;
 import co.edu.cesde.application.exception.EnrollmentAlreadyExistsException;
 import co.edu.cesde.application.exception.EnrollmentNotFoundException;
@@ -50,14 +48,10 @@ public class EnrollmentService implements EnrollmentRepository {
                 .orElseThrow(() ->
                         new CourseNotFoundException(courseId));
 
-        for (Enrollment e : enrollmentRepository.findAll()) {
-
-            if (e.getStudent().getStudentId().equals(studentId)
-                    && e.getCourse().getId().equals(courseId)) {
-
-                throw new EnrollmentAlreadyExistsException(studentId, courseId);
-            }
+        if (enrollmentRepository.existsByStudentStudentIdAndCourseId(studentId, courseId)) {
+            throw new EnrollmentAlreadyExistsException(studentId, courseId);
         }
+
 
         Enrollment enrollment = new Enrollment(student, course);
 
@@ -100,14 +94,46 @@ public class EnrollmentService implements EnrollmentRepository {
     @Override
     public Enrollment update(Enrollment enrollment) {
 
-        if (!enrollmentRepository.existsById(enrollment.getId())) {
+        Optional<Enrollment> enrollmentOptional =
+                enrollmentRepository.findById(enrollment.getId());
+
+        if (enrollmentOptional.isEmpty()) {
             throw new EnrollmentNotFoundException(enrollment.getId());
         }
 
-        enrollment.setUpdatedAt(LocalDateTime.now());
+        Enrollment enrollmentExistente = enrollmentOptional.get();
 
-        return enrollmentRepository.save(enrollment);
+        Student student = studentRepository
+                .findById(enrollment.getStudent().getStudentId())
+                .orElseThrow(() ->
+                        new StudentNotFoundException(
+                                enrollment.getStudent().getStudentId()));
+
+        Course course = courseRepository
+                .findById(enrollment.getCourse().getId())
+                .orElseThrow(() ->
+                        new CourseNotFoundException(
+                                enrollment.getCourse().getId()));
+        if (enrollmentRepository.existsByStudentStudentIdAndCourseIdAndIdNot(
+                student.getStudentId(),
+                course.getId(),
+                enrollment.getId())){
+            throw new EnrollmentAlreadyExistsException(
+                    student.getStudentId(),
+                    course.getId()
+            );
+        }
+
+        enrollmentExistente.setStudent(student);
+        enrollmentExistente.setCourse(course);
+        enrollmentExistente.setStatus(enrollment.getStatus());
+        enrollmentExistente.setUpdatedAt(LocalDateTime.now());
+
+        return enrollmentRepository.save(enrollmentExistente);
     }
+
+
+
 
     // ELIMINAR
     @Override
@@ -138,6 +164,10 @@ public class EnrollmentService implements EnrollmentRepository {
     @Override
     public Enrollment save(Enrollment enrollment) {
         return enrollmentRepository.save(enrollment);
+    }
+    @Override
+    public boolean existsByStudentStudentIdAndCourseId(Long studentId, Long courseId) {
+        return enrollmentRepository.existsByStudentStudentIdAndCourseId(studentId, courseId);
     }
 
 }
