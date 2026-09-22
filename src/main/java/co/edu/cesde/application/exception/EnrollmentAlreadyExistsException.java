@@ -1,6 +1,6 @@
 package co.edu.cesde.application.exception;
 
-public class EnrollmentAlreadyExistsException extends BusinessException {
+public class EnrollmentAlreadyExistsException extends ResourceAlreadyExistsException {
 
     public EnrollmentAlreadyExistsException(Long studentId, Long courseId) {
         super("El estudiante con ID " + studentId +

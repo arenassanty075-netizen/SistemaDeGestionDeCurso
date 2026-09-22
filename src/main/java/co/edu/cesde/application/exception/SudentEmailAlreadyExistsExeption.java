@@ -1,6 +1,6 @@
 package co.edu.cesde.application.exception;
 
-public class SudentEmailAlreadyExistsExeption extends BusinessException{
+public class SudentEmailAlreadyExistsExeption extends ResourceAlreadyExistsException{
     public SudentEmailAlreadyExistsExeption(String message) {
         super("Email already exists: " + message);
     }

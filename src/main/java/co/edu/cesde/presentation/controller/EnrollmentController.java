@@ -34,28 +34,19 @@ public class EnrollmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEnrollmentById(@PathVariable Long id) {
-
-        try {
+    public ResponseEntity<Object> getEnrollmentById(@PathVariable Long id) {
 
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(enrollmentService.findById(id).get());
 
-        } catch (EnrollmentNotFoundException e) {
 
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-        }
     }
 
 
     @PostMapping
-    public ResponseEntity<?> createEnrollment(
+    public ResponseEntity<Object> createEnrollment(
             @RequestBody CreateEnrollmentDto enrollmentDto) {
-
-        try {
 
             Enrollment enrollment = enrollmentService.createEnrollment(
                     enrollmentDto.studentId(),
@@ -74,24 +65,7 @@ public class EnrollmentController {
                     .status(HttpStatus.CREATED)
                     .body(response);
 
-        } catch (StudentNotFoundException e) {
 
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-
-        } catch (CourseNotFoundException e) {
-
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-
-        } catch (EnrollmentAlreadyExistsException e) {
-
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body(e.getMessage());
-        }
     }
 
 
@@ -100,9 +74,7 @@ public class EnrollmentController {
 
 
     @PutMapping
-    public ResponseEntity<?> update(@RequestBody UpdateEnrollmentDto enrollmentDto) {
-
-        try {
+    public ResponseEntity<Object> update(@RequestBody UpdateEnrollmentDto enrollmentDto) {
 
             Enrollment enrollment = new Enrollment();
 
@@ -125,34 +97,15 @@ public class EnrollmentController {
                     .status(HttpStatus.OK)
                     .body(updatedEnrollment);
 
-        } catch (EnrollmentNotFoundException e) {
 
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-        }catch (StudentNotFoundException e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-        }catch (CourseNotFoundException e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-        }catch (EnrollmentAlreadyExistsException e) {
-
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body(e.getMessage());
-        }
     }
 
 
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable Long id) {
+    public ResponseEntity<Object> delete(@PathVariable Long id) {
 
-        try {
 
             enrollmentService.deleteById(id);
 
@@ -160,12 +113,7 @@ public class EnrollmentController {
                     .status(HttpStatus.NO_CONTENT)
                     .build();
 
-        } catch (EnrollmentNotFoundException e) {
 
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-        }
     }
 
 }

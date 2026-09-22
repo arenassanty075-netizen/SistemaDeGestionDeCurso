@@ -1,6 +1,6 @@
 package co.edu.cesde.application.exception;
 
-public class EnrollmentNotFoundException extends BusinessException {
+public class EnrollmentNotFoundException extends ResouceNotFoundException {
     public EnrollmentNotFoundException(Long id) {
         super("No existe una matrícula con el id: " + id);
     }

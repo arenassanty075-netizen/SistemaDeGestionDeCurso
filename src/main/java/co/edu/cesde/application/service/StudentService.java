@@ -61,7 +61,7 @@ public class StudentService implements StudentRepository {
     public Student update(Student student) {
 
         if (student == null) {
-            throw new IllegalArgumentException("El estudiante no puede ser null");
+            throw new IllegalArgumentException("El estudi ante no puede ser null");
         }
 
         if (!studentRepository.existsById(student.getStudentId())) {

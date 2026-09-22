@@ -49,10 +49,8 @@ public class StudentController {
 
     // GET - BUSCAR ESTUDIANTE POR ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> getStudent(
+    public ResponseEntity<Object> getStudent(
             @PathVariable Long id) {
-
-        try {
 
             var studentOptional = studentService.findById(id);
 
@@ -70,63 +68,45 @@ public class StudentController {
                     .status(HttpStatus.OK)
                     .body(response);
 
-        } catch (StudentNotFoundException e) {
 
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-        }
     }
 
     // POST - CREAR ESTUDIANTE
     @PostMapping
-    public ResponseEntity<?> save(
+    public ResponseEntity<Object> save(
             @Valid @RequestBody CreateStudentDto student) {
 
-        try {
 
-            Student newStudent = new Student(
-                    student.firstName(),
-                    student.lastName(),
-                    student.email(),
-                    student.birthDate()
-            );
+        Student newStudent = new Student(
+                student.firstName(),
+                student.lastName(),
+                student.email(),
+                student.birthDate()
+        );
 
-            var createdStudent = studentService.save(newStudent);
+        var createdStudent = studentService.save(newStudent);
 
-            CreateStudentResponseDto response = new CreateStudentResponseDto(
-                    createdStudent.getStudentId(),
-                    createdStudent.getFirstName(),
-                    createdStudent.getLastName(),
-                    createdStudent.getEmail(),
-                    createdStudent.getEnrollmentStatus()
-            );
+        CreateStudentResponseDto response = new CreateStudentResponseDto(
+                createdStudent.getStudentId(),
+                createdStudent.getFirstName(),
+                createdStudent.getLastName(),
+                createdStudent.getEmail(),
+                createdStudent.getEnrollmentStatus()
+        );
 
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .body(response);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
 
-        } catch (SudentEmailAlreadyExistsExeption e) {
-
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body(e.getMessage());
-
-        } catch (IllegalArgumentException e) {
-
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .build();
-        }
     }
 
     // PUT - ACTUALIZAR ESTUDIANTE
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(
+    public ResponseEntity<Object> update(
             @PathVariable Long id,
             @Valid @RequestBody Student student) {
 
-        try {
+
 
             student.setStudentId(id);
 
@@ -144,31 +124,15 @@ public class StudentController {
                     .status(HttpStatus.OK)
                     .body(response);
 
-        } catch (StudentNotFoundException e) {
 
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-
-        } catch (IllegalArgumentException e) {
-
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .build();
-        } catch (SudentEmailAlreadyExistsExeption e) {
-
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body(e.getMessage());
-        }
     }
 
     // DELETE - ELIMINAR ESTUDIANTE
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteStudent(
+    public ResponseEntity<Object> deleteStudent(
             @PathVariable Long id) {
 
-        try {
+           var studentOptional = studentService.findById(id);
 
             studentService.deleteById(id);
 
@@ -176,12 +140,7 @@ public class StudentController {
                     .status(HttpStatus.NO_CONTENT)
                     .build();
 
-        } catch (StudentNotFoundException e) {
 
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(e.getMessage());
-        }
     }
 }
 
